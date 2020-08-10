@@ -1,6 +1,6 @@
 import { DefaultFooter, getMenuData, getPageTitle } from '@ant-design/pro-layout';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
-import { Link, SelectLang, useIntl, connect } from 'umi';
+import { Link, useIntl, connect } from 'umi';
 import React from 'react';
 import logo from '../assets/logo.svg';
 import styles from './UserLayout.less';
@@ -34,9 +34,6 @@ const UserLayout = props => {
       </Helmet>
 
       <div className={styles.container}>
-        <div className={styles.lang}>
-          <SelectLang />
-        </div>
         <div className={styles.content}>
           <div className={styles.top}>
             <div className={styles.header}>
@@ -49,7 +46,7 @@ const UserLayout = props => {
           </div>
           {children}
         </div>
-        <DefaultFooter />
+        <DefaultFooter copyright="2020 蚂蚁出品" links={[]} />
       </div>
     </HelmetProvider>
   );

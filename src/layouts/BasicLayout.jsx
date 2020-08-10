@@ -17,10 +17,10 @@ const noMatch = (
   <Result
     status={403}
     title="403"
-    subTitle="Sorry, you are not authorized to access this page."
+    subTitle="无权访问该页面"
     extra={
       <Button type="primary">
-        <Link to="/user/login">Go Login</Link>
+        <Link to="/user/login">去登录</Link>
       </Button>
     }
   />

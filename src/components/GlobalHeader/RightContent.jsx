@@ -22,6 +22,7 @@ const GlobalHeaderRight = props => {
 
   return (
     <div className={className}>
+      {false &&
       <HeaderSearch
         className={`${styles.action} ${styles.search}`}
         placeholder="站内搜索"
@@ -46,7 +47,8 @@ const GlobalHeaderRight = props => {
         ]} // onSearch={value => {
         //   //console.log('input', value);
         // }}
-      />
+      />}
+      {false &&
       <Tooltip title="使用文档">
         <a
           style={{
@@ -59,14 +61,15 @@ const GlobalHeaderRight = props => {
         >
           <QuestionCircleOutlined />
         </a>
-      </Tooltip>
+      </Tooltip>}
       <Avatar />
       {REACT_APP_ENV && (
         <span>
           <Tag color={ENVTagColor[REACT_APP_ENV]}>{REACT_APP_ENV}</Tag>
         </span>
       )}
-      <SelectLang className={styles.action} />
+      {false &&
+      <SelectLang className={styles.action} />}
     </div>
   );
 };
