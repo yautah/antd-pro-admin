@@ -1,11 +1,20 @@
-import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { DownOutlined,LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Menu, Spin } from 'antd';
 import React from 'react';
 import { history, connect } from 'umi';
 import HeaderDropdown from '../HeaderDropdown';
+import PasswordModal from './PasswordModal.jsx';
 import styles from './index.less';
 
 class AvatarDropdown extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      showModal: false,
+    }
+  }
+
   onMenuClick = event => {
     const { key } = event;
 
@@ -18,6 +27,12 @@ class AvatarDropdown extends React.Component {
         });
       }
 
+      return;
+    }
+
+
+    if (key === 'password') {
+      this.setState({showModal: true});
       return;
     }
 
@@ -48,19 +63,30 @@ class AvatarDropdown extends React.Component {
         )}
         {menu && <Menu.Divider />}
 
+
+      <Menu.Item key="password">
+        <SettingOutlined />
+        修改密码
+      </Menu.Item>
+      <Menu.Divider />
+
         <Menu.Item key="logout">
           <LogoutOutlined />
           退出登录
         </Menu.Item>
       </Menu>
     );
-    return currentUser && currentUser.name ? (
+    return currentUser && currentUser.id ? (
+      <>
       <HeaderDropdown overlay={menuHeaderDropdown}>
         <span className={`${styles.action} ${styles.account}`}>
-          <Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" />
-          <span className={`${styles.name} anticon`}>{currentUser.name}</span>
+          <Avatar icon={<UserOutlined />} size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" />
+          <span className={`${styles.name} anticon`}>{currentUser.login}</span>
+          <DownOutlined style={{ marginLeft: '6px' }} />
         </span>
       </HeaderDropdown>
+      <PasswordModal visible={this.state.showModal} onCancel={()=> this.setState({showModal: false})} />
+      </>
     ) : (
       <span className={`${styles.action} ${styles.account}`}>
         <Spin

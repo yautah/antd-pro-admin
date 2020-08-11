@@ -1,4 +1,5 @@
 import { reloadAuthorized } from './Authorized'; // use localStorage to store the authority info, which might be sent from server in actual project.
+import cookie from './cookie'
 
 export function getAuthority(str) {
   const authorityString =
@@ -31,3 +32,15 @@ export function setAuthority(authority) {
 
   reloadAuthorized();
 }
+
+export function setAccessToken (token, autoLogin){
+  cookie.write('accessToken', token, autoLogin ? 99 : 0);
+};
+
+export function getAccessToken (){
+  return cookie.read('accessToken');
+};
+
+export function removeAccessToken(){
+  cookie.remove('accessToken');
+};

@@ -50,6 +50,11 @@ const errorHandler = error => {
  */
 
 const request = extend({
+  // prefix: '/s',
+  prefix: '/api',
+  headers: {
+    'Content-Type': 'application/json; charset=utf-8',
+  },
   errorHandler,
   // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie

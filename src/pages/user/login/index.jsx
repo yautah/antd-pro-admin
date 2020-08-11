@@ -1,10 +1,8 @@
-import { Alert, Checkbox } from 'antd';
+import { Form, Input, Button, Alert, Checkbox } from 'antd';
 import React, { useState } from 'react';
 import { Link, connect } from 'umi';
-import LoginForm from './components/Login';
 import styles from './style.less';
 
-const {  UserName, Password, Mobile, Captcha, Submit } = LoginForm;
 
 const LoginMessage = ({ content }) => (
   <Alert
@@ -19,61 +17,58 @@ const LoginMessage = ({ content }) => (
 
 const Login = props => {
   const { userLogin = {}, submitting } = props;
-  const { status, type: loginType } = userLogin;
+  const { status  } = userLogin;
   const [autoLogin, setAutoLogin] = useState(true);
-  const [type, setType] = useState('account');
 
   const handleSubmit = values => {
     const { dispatch } = props;
     dispatch({
       type: 'login/login',
-      payload: { ...values, type },
+      payload: { ...values, autoLogin },
     });
   };
 
   return (
     <div className={styles.main}>
-      <LoginForm  onSubmit={handleSubmit}>
-          {status === 'error' && loginType === 'account' && !submitting && (
-            <LoginMessage content="账户或密码错误（admin/ant.design）" />
-          )}
+      <Form size="large"  onFinish={handleSubmit}>
+        {status >0 &&   !submitting && (
+          <LoginMessage content="账户或密码错误（admin/ant.design）" />
+        )}
 
-          <UserName
-            name="userName"
-            placeholder="用户名: admin or user"
+          <Form.Item
+            name="login"
             rules={[
               {
                 required: true,
                 message: '请输入用户名!',
               },
-            ]}
-          />
-          <Password
+            ]}>
+            <Input placeholder="用户名: admin" />
+          </Form.Item>
+          <Form.Item
             name="password"
-            placeholder="密码: ant.design"
             rules={[
               {
                 required: true,
                 message: '请输入密码！',
               },
-            ]}
-          />
+            ]}>
+            <Input type="password" placeholder="密码: admin" />
+          </Form.Item>
 
-        <div>
-          <Checkbox checked={autoLogin} onChange={e => setAutoLogin(e.target.checked)}>
-            自动登录
-          </Checkbox>
-          <a
-            style={{
-              float: 'right',
-            }}
-          >
-            忘记密码
-          </a>
-        </div>
-        <Submit loading={submitting}>登录</Submit>
-      </LoginForm>
-    </div>
+          <Form.Item>
+            <Checkbox checked={autoLogin} onChange={e => setAutoLogin(e.target.checked)}>
+              自动登录
+            </Checkbox>
+            <a style={{ float: 'right' }}>忘记密码</a>
+          </Form.Item>
+          <Form.Item>
+            <Button  style={{ width: '100%' }}
+              type="primary"
+              htmlType="submit" loading={submitting}>登录</Button>
+          </Form.Item>
+        </Form>
+      </div>
   );
 };
 

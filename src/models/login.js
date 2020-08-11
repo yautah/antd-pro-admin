@@ -1,8 +1,10 @@
 import { stringify } from 'querystring';
 import { history } from 'umi';
-import { fakeAccountLogin } from '@/services/login';
-import { setAuthority } from '@/utils/authority';
+import { login } from '@/services/login';
+import {  setAuthority, setAccessToken, removeAccessToken } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
+
+import request from '@/utils/request';
 
 const Model = {
   namespace: 'login',
@@ -11,53 +13,45 @@ const Model = {
   },
   effects: {
     *login({ payload }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
-      yield put({
-        type: 'changeLoginStatus',
-        payload: response,
-      }); // Login successfully
 
-      if (response.status === 'ok') {
-        const urlParams = new URL(window.location.href);
-        const params = getPageQuery();
-        let { redirect } = params;
+      const {autoLogin, ...params} = payload
 
-        if (redirect) {
-          const redirectUrlParams = new URL(redirect);
+      const response = yield call(login, params);
 
-          if (redirectUrlParams.origin === urlParams.origin) {
-            redirect = redirect.substr(urlParams.origin.length);
+      //请求成功，设置登陆页状态
+      yield put.resolve({ type: 'setLoginStatus', payload: response });
 
-            if (redirect.match(/^\/.*#/)) {
-              redirect = redirect.substr(redirect.indexOf('#') + 1);
-            }
-          } else {
-            window.location.href = '/';
-            return;
-          }
-        }
+      if (response.status == 0) {
 
-        history.replace(redirect || '/');
+        const user = response.data
+
+        //请求header中附加 token
+        request.extendOptions({ headers: { token: user.token || '' }});
+
+        //保存token到本地，设置是否自动登录
+        setAccessToken(user.token, autoLogin)
+
+        //设置用户权限
+        setAuthority(user.role);
+
+        //store中设置currentUser
+        yield put.resolve({ type: 'user/saveCurrentUser', payload: user });
+
+        history.replace('/');
       }
     },
 
-    logout() {
-      const { redirect } = getPageQuery(); // Note: There may be security issues, please note
-
-      if (window.location.pathname !== '/user/login' && !redirect) {
-        history.replace({
-          pathname: '/user/login',
-          search: stringify({
-            redirect: window.location.href,
-          }),
-        });
-      }
+    *logout(_, {put}) {
+      removeAccessToken();
+      //请求header中移除 token
+      request.extendOptions({ headers: { token: '' }});
+      yield put.resolve({ type: 'user/saveCurrentUser', payload: {} });
+      history.replace({ pathname: '/user/login' });
     },
   },
   reducers: {
-    changeLoginStatus(state, { payload }) {
-      setAuthority(payload.currentAuthority);
-      return { ...state, status: payload.status, type: payload.type };
+    setLoginStatus(state, { payload }) {
+      return { ...state, status: payload.status  };
     },
   },
 };

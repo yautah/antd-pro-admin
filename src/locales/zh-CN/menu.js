@@ -55,4 +55,6 @@ export default {
   'menu.records': '记录列表',
   'menu.records.recordsNew': '新建记录',
   'menu.records.recordsEdit': '编辑记录',
+
+  'menu.users': '用户列表'
 };
